@@ -8,18 +8,35 @@
  * @format
  */
 
-const words = ["what's", "up", "Mobile", "development", "is", "awesome"];
+const words = ["what's", "up", "Mobile", "dev", "is", "Awesome"];
 import React from "react";
 import {StyleSheet, Text} from "react-native";
-import Animated from "react-native-reanimated";
+import Animated, {
+  useAnimatedScrollHandler,
+  useSharedValue,
+} from "react-native-reanimated";
+
+import {Page} from "./components/page";
 // eslint-disable-next-line import/no-default-export
 export default function App() {
+  const translateX = useSharedValue(0);
+  const scrollHandler = useAnimatedScrollHandler(event => {
+    translateX.value = event.contentOffset.x;
+  });
   return (
-    <Animated.ScrollView style={styles.container}>
+    <Animated.ScrollView
+      style={styles.container}
+      horizontal
+      pagingEnabled
+      onScroll={scrollHandler}
+      scrollEventThrottle={16}>
       {words.map((word, i) => (
-        <Text key={i} style={styles.text}>
-          {word}
-        </Text>
+        <Page
+          title={word}
+          index={i}
+          key={i.toString()}
+          translateX={translateX}
+        />
       ))}
     </Animated.ScrollView>
   );
@@ -28,9 +45,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "red",
-  },
-  text: {
-    fontSize: 30,
+    backgroundColor: "#fff",
   },
 });
